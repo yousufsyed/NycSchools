@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/schools_List">
+
+    <fragment
+        android:id="@+id/schools_List"
+        android:name="com.yousufsyed.nycschools.view.SchoolsListFragment"
+        android:label="@string/school_list_fragment_label"
+        tools:layout="@layout/fragment_nyc_schools_list" >
+
+        <action
+            android:id="@+id/action_showSchoolDetails"
+            app:destination="@id/school_details"
+            app:launchSingleTop="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/school_details"
+        android:name="com.yousufsyed.nycschools.view.SchoolDetailsFragment"
+        android:label="@string/school_details_fragment_label"
+        tools:layout="@layout/fragment_school_details" >
+        <action
+            android:id="@+id/action_showSchoolsList"
+            app:destination="@id/schools_List"
+            app:popUpTo="@id/schools_List" />
+    </fragment>
+</navigation>

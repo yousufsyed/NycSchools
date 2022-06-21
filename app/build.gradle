@@ -1,0 +1,74 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs.kotlin'
+}
+
+apply from: '../dependencies.gradle'
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.yousufsyed.nycschools"
+        minSdk 24
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+
+    configurations {
+        implementation.exclude group: 'com.android.tools.external.com-intellij', module: 'intellij-core'
+        implementation.exclude group: 'com.android.tools.external.com-intellij', module: 'kotlin-compiler'
+        implementation.exclude group: 'javax.activation', module: 'javax.activation-api'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
+}
+
+dependencies {
+    implementation project.ext.androidX.values()
+    implementation project.ext.kotlin.values()
+    implementation project.ext.themes.values()
+    implementation project.ext.network.values()
+    implementation project.ext.di.values()
+
+    kapt(project.ext.annotationProcessor.daggerCompiler)
+    kapt(project.ext.annotationProcessor.roomCompiler)
+    kapt(project.ext.annotationProcessor.lifecycleCompiler)
+
+    testImplementation project.ext.test.values()
+    androidTestImplementation project.ext.instrumentation.values()
+}

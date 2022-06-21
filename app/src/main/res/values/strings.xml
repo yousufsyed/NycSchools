@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">NYCSchools_YousufSyed</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Strings used for fragments for navigation -->
+    <string name="school_list_fragment_label">Schools List Fragment</string>
+    <string name="school_details_fragment_label">School Details Fragment</string>
+    <string name="retry">Retry</string>
+    <string name="network_error_message">"Unable to connect to network"</string>
+    <string name="generic_error_message">Ops… something went wrong. Please check your network and try again</string>
+    <string name="end_of_schools_list_message">End of Schools List reached</string>
+    <string name="avg_reading_scores">Reading Avg: %s</string>
+    <string name="avg_writing_scores">Writing Avg: %s</string>
+    <string name="avg_math_score">Math Avg: %s</string>
+    <string name="total_test_takers">Applicants: %s</string>
+    <string name="sat_scores">SAT Scores:</string>
+    <string name="overview">Overview:</string>
+    <string name="contact_us">Contact us:</string>
+</resources>
