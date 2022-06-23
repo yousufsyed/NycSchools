@@ -89,7 +89,7 @@ class SchoolsListFragment : Fragment(R.layout.fragment_nyc_schools_list) {
 
     private fun showResultList() {
         with(binding) {
-            schoolsListRv.visibility = View.VISIBLE
+            nycSchoolResultsContainer.visibility = View.VISIBLE
         }
     }
 
@@ -121,7 +121,7 @@ class SchoolsListFragment : Fragment(R.layout.fragment_nyc_schools_list) {
     private fun resetViews() {
         with(binding) {
             progressBar.visibility = View.GONE
-            schoolsListRv.visibility = View.GONE
+            nycSchoolResultsContainer.visibility = View.GONE
             errorContainer.visibility = View.GONE
             emptyStateTv.visibility = View.GONE
         }
