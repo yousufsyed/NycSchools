@@ -25,9 +25,11 @@ import javax.inject.Inject
  */
 class SchoolsListFragment : Fragment(R.layout.fragment_nyc_schools_list) {
 
-    @Inject lateinit var nycSchoolsViewModelFactory: NycSchoolsViewModelFactory
+    @Inject
+    lateinit var nycSchoolsViewModelFactory: NycSchoolsViewModelFactory
 
-    @Inject lateinit var schoolProvider: SchoolProvider
+    @Inject
+    lateinit var schoolProvider: SchoolProvider
 
     private val nycViewModel: NycSchoolsViewModel by activityViewModels {
         nycSchoolsViewModelFactory
@@ -59,41 +61,46 @@ class SchoolsListFragment : Fragment(R.layout.fragment_nyc_schools_list) {
         with(binding) {
             with(schoolsListRv) {
                 adapter = nycSchoolAdapter
-                layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
+                layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 addItemDecoration(DividerItemDecoration(requireContext(), LinearLayout.VERTICAL))
             }
         }
+        resetViews()
     }
 
     private fun initObservers() {
-        nycViewModel.nycSchoolsStateLiveData.observe( viewLifecycleOwner ) {
-            when(it) {
+        nycViewModel.nycSchoolsStateLiveData.observe(viewLifecycleOwner) {
+            resetViews()
+            when (it) {
                 Loading -> showLoadingState()
-                is Success -> showResultList(it.nycSchool)
+                is Success -> showResultList()
                 is Error -> showErrorState(it.throwable)
             }
         }
+
+        nycViewModel.nycSchoolsLiveData.observe(viewLifecycleOwner) {
+            if(it.isNullOrEmpty()) {
+                showEmptyState()
+            }
+            nycSchoolAdapter.submitList(it)
+        }
     }
 
-    private fun showResultList(nycSchools: List<NycSchool>) {
-        nycSchoolAdapter.submitList(nycSchools)
+    private fun showResultList() {
         with(binding) {
-            progressBar.visibility = View.GONE
-            errorContainer.visibility = View.GONE
             schoolsListRv.visibility = View.VISIBLE
         }
     }
 
     private fun showErrorState(error: Throwable) {
-        val message = when(error) {
+        val message = when (error) {
             is NetworkConnectivityError -> getString(R.string.network_error_message)
             // TODO: Show Error messages based on Exceptions
             else -> getString(R.string.generic_error_message)
         }
 
         with(binding) {
-            progressBar.visibility = View.GONE
-            schoolsListRv.visibility = View.GONE
             errorContainer.visibility = View.VISIBLE
             errorTv.text = message
 
@@ -101,14 +108,22 @@ class SchoolsListFragment : Fragment(R.layout.fragment_nyc_schools_list) {
                 nycViewModel.retryFetch()
             }
         }
-
     }
 
     private fun showLoadingState() {
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun showEmptyState() {
+        binding.emptyStateTv.visibility = View.VISIBLE
+    }
+
+    private fun resetViews() {
         with(binding) {
-            progressBar.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
             schoolsListRv.visibility = View.GONE
             errorContainer.visibility = View.GONE
+            emptyStateTv.visibility = View.GONE
         }
     }
 

@@ -4,8 +4,8 @@ import com.yousufsyed.nycschools.dao.data.NycSchool
 
 sealed class NycSchoolsResults {
     object Loading : NycSchoolsResults()
-    class Success(val nycSchool: List<NycSchool>): NycSchoolsResults()
-    class Error(val throwable: Throwable) : NycSchoolsResults()
+    object Success: NycSchoolsResults()
+    data class Error(val throwable: Throwable) : NycSchoolsResults()
 }
 
 data class NycSchoolInfo(

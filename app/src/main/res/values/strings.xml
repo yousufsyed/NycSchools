@@ -16,4 +16,5 @@
     <string name="sat_scores">SAT Scores:</string>
     <string name="overview">Overview:</string>
     <string name="contact_us">Contact us:</string>
+    <string name="no_school_results_found">No School results found</string>
 </resources>

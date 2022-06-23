@@ -6,9 +6,7 @@ import com.yousufsyed.nycschools.network.NycSchoolRestClient
 import com.yousufsyed.nycschools.network.data.NycSchoolsResults
 import com.yousufsyed.nycschools.network.data.mergeResults
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -19,7 +17,7 @@ interface NycSchoolsProvider {
      */
     suspend fun getSchools(): NycSchoolsResults
 
-    suspend fun getSchoolsAsFlow(): StateFlow<List<NycSchool>>
+    fun getSchoolsAsFlow(): Flow<List<NycSchool>>
 }
 
 /**
@@ -33,24 +31,19 @@ class DefaultNycSchoolsProvider @Inject constructor(
     private val eventLogger: EventLogger
 ) : NycSchoolsProvider, EventLogger by eventLogger {
 
-    override suspend fun getSchoolsAsFlow(): StateFlow<List<NycSchool>> {
-        return MutableStateFlow<List<NycSchool>>(emptyList()).apply {
-            nycSchoolsDao.getNycSchoolsAsFlow()
-                .catch { logError(it) }
-                .collect { emit(it) }
-        }
+    override fun getSchoolsAsFlow(): Flow<List<NycSchool>> {
+        return nycSchoolsDao.getNycSchoolsAsFlow()
     }
 
     override suspend fun getSchools(): NycSchoolsResults {
         return withContext(dispatcherProvider.io) {
             try {
-                var results = nycSchoolsDao.getNycSchools()
+                if(nycSchoolsDao.getNycSchoolsCount() == 0) {
                 // if results are not in DB then fetch from network
-                if(results.isNullOrEmpty()) {
-                    results = fetchSchools()
+                    fetchSchools()
+                    logSuccess(SCHOOLS_FETCH_SUCCESS_MESSAGE)
                 }
-                logSuccess(SCHOOLS_FETCH_SUCCESS_MESSAGE)
-                NycSchoolsResults.Success(results)
+                NycSchoolsResults.Success
             } catch (exception: Exception) {
                     logError(exception)
                     NycSchoolsResults.Error(exception)
@@ -59,7 +52,7 @@ class DefaultNycSchoolsProvider @Inject constructor(
         }
     }
 
-    private suspend fun fetchSchools(): List<NycSchool> {
+    private suspend fun fetchSchools() {
         if (!networkAvailabilityProvider.isConnectedToNetwork()) {
             throw NetworkConnectivityError()
         }
@@ -68,7 +61,6 @@ class DefaultNycSchoolsProvider @Inject constructor(
             val satScores = async { nycSchoolRestClient.getSatScores() }
             val results = mergeResults(schoolsList.await(), satScores.await())
             saveSchools(results)
-            results
         }
     }
 
